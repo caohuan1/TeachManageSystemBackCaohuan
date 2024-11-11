@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class MyAspect7 {
-    @Pointcut("@annotation(com.itheima.aop.MyLog)")
+    @Pointcut("@annotation(com.itheima.anno.MyLog)")
     private void pt(){}
 
     @Before("pt()")

@@ -1,10 +1,9 @@
 package com.itheima.controller;
 
-import com.itheima.aop.MyLog;
+import com.itheima.anno.Log;
 import com.itheima.pojo.Dept;
 import com.itheima.pojo.Result;
 import com.itheima.service.DeptService;
-import org.apache.ibatis.annotations.Insert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +34,7 @@ public class DeptController {
     }
     //根据url传入删除的id删除部门
     @DeleteMapping("/{id}")
+    @Log
     public Result delete(@PathVariable int id) throws Exception {
         int i = deptService.delete(id);
         if (i > 0) {
@@ -45,12 +45,14 @@ public class DeptController {
     }
     //json格式传入新增的部门进行新增部门操作
     @PostMapping
+    @Log
     public Result insert(@RequestBody Dept dept) {
         deptService.add(dept);
         return Result.success();
     }
     //json格式传入新增的部门进行修改部门操作
     @PutMapping
+    @Log
     public Result update(@RequestBody Dept dept) {
         int u = deptService.update(dept);
         if (u > 0) {
