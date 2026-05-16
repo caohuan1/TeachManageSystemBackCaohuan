@@ -14,13 +14,21 @@
     <name>tlias-web-management</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
     </properties>
     <dependencies>
         <!--web起步依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--热部署，修改代码后不用重启项目就可以生效-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
 
         <!--mybatis起步依赖-->

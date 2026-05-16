@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.StudentMapper">
+
+    <sql id="commonSelect">
+        select * from student
+    </sql>
+
+    <update id="update">
+        update student
+        <set>
+            <if test="username != null and username !=''">
+                username = #{username},
+            </if>
+            <if test="password != null and password !=''">
+                password = #{password},
+            </if>
+            <if test="name != null and name !=''">
+                name = #{name},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="image != null and image !=''">
+                image = #{image},
+            </if>
+            <if test="phone != null and phone !=''">
+                phone = #{phone},
+            </if>
+            <if test="idCard != null and idCard !=''">
+                id_card = #{idCard},
+            </if>
+            <if test="classId != null">
+                class_id = #{classId},
+            </if>
+            <if test="education != null and education !=''">
+                education = #{education},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="pageHelper" resultType="com.itheima.pojo.Student">
+        <include refid="commonSelect"/>
+        <where>
+            <if test="name != null and name !=''">
+                name like concat('%', #{name}, '%')
+            </if>
+            <if test="gender != null">
+                and gender = #{gender}
+            </if>
+            <if test="classId != null">
+                and class_id = #{classId}
+            </if>
+            <if test="begin != null and end != null">
+                and create_time between #{begin} and #{end}
+            </if>
+        </where>
+        order by update_time desc
+    </select>
+
+    <delete id="deleteByIds">
+        delete from student where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
