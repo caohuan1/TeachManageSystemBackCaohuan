@@ -77,4 +77,35 @@ public class EmpServiceImpl implements EmpService {
         return emp;
     }
 
+    @Override
+    public boolean updatePassword(Integer id, String oldPassword, String newPassword) {
+        // 校验新密码不能为空
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            throw new IllegalArgumentException("新密码不能为空");
+        }
+        
+        // 校验密码长度（至少6位）
+        if (newPassword.length() < 6) {
+            throw new IllegalArgumentException("密码长度不能少于6位");
+        }
+        
+        Emp emp = empMapper.selectById(id);
+        if (emp == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
+        
+        // 校验原密码
+        if (!emp.getPassword().equals(oldPassword)) {
+            return false;
+        }
+        
+        // 校验新密码不能和原密码相同
+        if (newPassword.equals(oldPassword)) {
+            throw new IllegalArgumentException("新密码不能与原密码相同");
+        }
+        
+        empMapper.updatePassword(id, newPassword, LocalDateTime.now());
+        return true;
+    }
+
 }

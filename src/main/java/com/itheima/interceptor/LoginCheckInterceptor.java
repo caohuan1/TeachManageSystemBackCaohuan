@@ -17,21 +17,23 @@ import jakarta.servlet.http.HttpServletResponse;
 public class LoginCheckInterceptor implements HandlerInterceptor {
     @Override //目标资源方法运行前运行, 返回true: 放行, 放回false, 不放行
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) throws Exception {
-        //1.获取请求url。
+        //1.获取请求方法
+        String method = req.getMethod();
+        
+        //2.如果是GET请求（查询操作），直接放行，不需要token
+        if ("GET".equalsIgnoreCase(method)) {
+            System.out.println("GET请求(查询操作), 放行...");
+            return true;
+        }
+
+        //3.获取请求url。
         String url = req.getRequestURL().toString();
         System.out.println("请求的url: "+url);
 
-        //2.判断请求url中是否包含login，如果包含，说明是登录操作，放行。
-        //这里代码可以不用加，因为WebConfig类中已经写了/login接口不做拦截
-//        if(url.contains("login")){
-//            System.out.println("登录操作, 放行...");
-//            return true;
-//        }
-
-        //3.获取请求头中的令牌（token）。
+        //4.获取请求头中的令牌（token）。
         String jwt = req.getHeader("token");
 
-        //4.判断令牌是否存在，如果不存在，返回错误结果（未登录）。
+        //5.判断令牌是否存在，如果不存在，返回错误结果（未登录）。
         if(!StringUtils.hasLength(jwt)){
             System.out.println("请求头token为空,返回未登录的信息");
             Result error = Result.error("NOT_LOGIN");
@@ -41,7 +43,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        //5.解析token，如果解析失败，返回错误结果（未登录）。
+        //6.解析token，如果解析失败，返回错误结果（未登录）。
         try {
             JwtUtils.parseJWT(jwt);
         } catch (Exception e) {//jwt解析失败
@@ -54,7 +56,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        //6.放行。
+        //7.放行。
         System.out.println("令牌合法, 放行");
         System.out.println("拦截器【Interceptor】的方法[preHandle]被执行...");
         return true;

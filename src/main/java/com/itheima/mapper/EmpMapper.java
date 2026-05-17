@@ -2,9 +2,12 @@ package com.itheima.mapper;
 
 import com.itheima.pojo.Emp;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -40,4 +43,7 @@ public interface EmpMapper {
 
     @Select("delete from emp where dept_id = #{deptId}")
     void deleteByDeptId(Integer deptId);
+
+    @Update("update emp set password = #{newPassword}, update_time = #{updateTime} where id = #{id}")
+    void updatePassword(@Param("id") Integer id, @Param("newPassword") String newPassword, @Param("updateTime") LocalDateTime updateTime);
 }

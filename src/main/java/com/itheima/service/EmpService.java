@@ -27,4 +27,13 @@ public interface EmpService {
     void update(Emp emp);
 
     Emp login(Emp emp);
+
+    /**
+     * 修改密码
+     * @param id 员工ID
+     * @param oldPassword 原密码
+     * @param newPassword 新密码
+     * @return 修改结果（true-成功，false-原密码错误）
+     */
+    boolean updatePassword(Integer id, String oldPassword, String newPassword);
 }
