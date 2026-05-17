@@ -15,6 +15,10 @@ spring:
       #配置单个请求最大上传大小(一次请求可以上传多个文件)
       max-request-size: 1000MB
 
+server:
+  port: 8080
+  address: 0.0.0.0
+
 mybatis:
   configuration:
     #配置mybatis的日志, 指定输出到控制台
