@@ -2,13 +2,15 @@ package com.itheima.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
 public class JwtUtils {
 
-    private static String signKey = "itheima";
+    private static String signKey = "itheima_itheima_itheima_itheima_1"; // 33 characters > 32 required
     //过期时间为  1000毫秒*3600*12 = 12小时
     private static Long expire = 43200000L;
 
@@ -18,10 +20,11 @@ public class JwtUtils {
      * @return
      */
     public static String generateJwt(Map<String, Object> claims){
+        SecretKey key = Keys.hmacShaKeyFor(signKey.getBytes(StandardCharsets.UTF_8));
         String jwt = Jwts.builder()
-                .addClaims(claims)
-                .signWith(SignatureAlgorithm.HS256, signKey)
-                .setExpiration(new Date(System.currentTimeMillis() + expire))
+                .claims(claims)
+                .signWith(key)
+                .expiration(new Date(System.currentTimeMillis() + expire))
                 .compact();
         return jwt;
     }
@@ -32,10 +35,12 @@ public class JwtUtils {
      * @return JWT第二部分负载 payload 中存储的内容
      */
     public static Claims parseJWT(String jwt){
+        SecretKey key = Keys.hmacShaKeyFor(signKey.getBytes(StandardCharsets.UTF_8));
         Claims claims = Jwts.parser()
-                .setSigningKey(signKey)
-                .parseClaimsJws(jwt)
-                .getBody();
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload();
         return claims;
     }
 }

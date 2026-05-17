@@ -1,8 +1,8 @@
 package com.itheima.filter;
 
 import java.io.IOException;
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 //@WebFilter(urlPatterns = "/*")//表示对所有请求路径开启拦截
 public class DemoFilter implements Filter {
     @Override
