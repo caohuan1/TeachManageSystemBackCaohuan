@@ -35,7 +35,7 @@ public class DeptController {
     //根据url传入删除的id删除部门
     @DeleteMapping("/{id}")
     @Log
-    public Result delete(@PathVariable int id) throws Exception {
+    public Result delete(@PathVariable int id) {
         int i = deptService.delete(id);
         if (i > 0) {
             return Result.success();
@@ -43,12 +43,23 @@ public class DeptController {
             return Result.error("删除失败！(来自后端响应)");
         }
     }
+    //根据url传入id解散部门：将该部门下所有员工移入空部门(dept_id=0)，保留部门记录
+    @DeleteMapping("/dissolve/{id}")
+    @Log
+    public Result dissolve(@PathVariable int id) {
+        int i = deptService.dissolve(id);
+        if (i > 0) {
+            return Result.success();
+        } else {
+            return Result.error("该部门下已没任何员工。");
+        }
+    }
     //json格式传入新增的部门进行新增部门操作
     @PostMapping
     @Log
     public Result insert(@RequestBody Dept dept) {
         deptService.add(dept);
-        return Result.success();
+        return Result.success(dept.getId());
     }
     //json格式传入新增的部门进行修改部门操作
     @PutMapping

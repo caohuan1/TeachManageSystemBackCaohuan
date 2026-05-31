@@ -44,6 +44,12 @@ public interface EmpMapper {
     @Select("delete from emp where dept_id = #{deptId}")
     void deleteByDeptId(Integer deptId);
 
+    @Select("select * from emp where dept_id = #{deptId}")
+    List<Emp> selectByDeptId(Integer deptId);
+
+    @Update("update emp set dept_id = 0 where dept_id = #{deptId}")
+    int updateDeptIdToZero(Integer deptId);
+
     @Update("update emp set password = #{newPassword}, update_time = #{updateTime} where id = #{id}")
     void updatePassword(@Param("id") Integer id, @Param("newPassword") String newPassword, @Param("updateTime") LocalDateTime updateTime);
 }

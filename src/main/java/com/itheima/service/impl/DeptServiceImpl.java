@@ -5,6 +5,7 @@ import com.itheima.mapper.DeptMapper;
 import com.itheima.mapper.EmpMapper;
 import com.itheima.pojo.Dept;
 import com.itheima.pojo.DeptLog;
+import com.itheima.pojo.Emp;
 import com.itheima.service.DeptLogService;
 import com.itheima.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DeptServiceImpl implements DeptService {
@@ -34,16 +36,18 @@ public class DeptServiceImpl implements DeptService {
 
     @Transactional(rollbackFor = Exception.class)//此方法开启事务（要么全部成功，事务提交；要么全部失败，事务回滚）
     @Override
-    public int delete(Integer id) throws Exception {
+    public int delete(Integer id) {
+        // 检查该部门下是否有员工
+        List<Emp> empList = empMapper.selectByDeptId(id);
+        if (empList != null && !empList.isEmpty()) {
+            String names = empList.stream()
+                    .map(Emp::getName)
+                    .collect(Collectors.joining("、"));
+            throw new RuntimeException("该部门下还有员工" + names + ",不允许删除！");
+        }
         int i;
         try {
             i = deptMapper.deleteById(id);
-//        int s= 1/0;  //测试一下，此处会报运行时异常，因为开启了事务，所以需要回滚，删除部门失败
-            //        通过部门id删除该部门下的所有员工
-            empMapper.deleteByDeptId(id);
-            if(true){//该异常不为运行时异常，如果不加rollbackFor = Exception.class，则事务默认不会捕获该异常也不会回滚，会直接提交事务
-                throw new Exception("出错了...");
-            }
         } finally {
             DeptLog deptLog = new DeptLog();
             deptLog.setCreateTime(LocalDateTime.now());
@@ -51,6 +55,19 @@ public class DeptServiceImpl implements DeptService {
             deptLogService.insert(deptLog);
         }
         return i;
+    }
+
+    @Transactional(rollbackFor = Exception.class)//解散部门：员工dept_id置为0，保留部门记录（不删除）
+    @Override
+    public int dissolve(Integer id) {
+        // 将该部门下所有员工的 dept_id 置为 0
+        int count = empMapper.updateDeptIdToZero(id);
+        // 记录操作日志
+        DeptLog deptLog = new DeptLog();
+        deptLog.setCreateTime(LocalDateTime.now());
+        deptLog.setDescription("执行了解散部门的操作,此次解散的是" + id + "号部门，该部门" + count + "名员工已移入空部门");
+        deptLogService.insert(deptLog);
+        return count;
     }
 
     @Override
